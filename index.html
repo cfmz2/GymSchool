@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Вход в АСУ РСО</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --bg: #10131A; --card: #1C1F26; --primary: #4C8DFF; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg); color: white;
+            margin: 0; padding: 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+        .container {
+            background: var(--card); border-radius: 16px; padding: 20px;
+            margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        h2 { margin-top: 0; color: var(--primary); }
+        p { color: #aaa; font-size: 14px; line-height: 1.5; }
+        .btn {
+            background: var(--primary); color: white; border: none;
+            padding: 16px; font-size: 16px; border-radius: 12px;
+            width: 100%; font-weight: bold; cursor: pointer;
+            margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn:active { opacity: 0.8; }
+        input {
+            width: 100%; padding: 14px; margin-top: 10px;
+            background: #0a0c10; border: 1px solid #333; color: white;
+            border-radius: 10px; box-sizing: border-box; font-size: 14px;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="step1">
+        <h2>АСУ РСО</h2>
+        <p>1. Нажми кнопку ниже, чтобы открыть сайт в браузере.</p>
+        <p>2. Войди через Госуслуги.</p>
+        <p>3. Вернись сюда и вставь куки.</p>
+        <button class="btn" onclick="openSite()">Открыть сайт АСУ РСО 🌐</button>
+        <button class="btn" onclick="showStep2()">Я вошел, далее ➡️</button>
+    </div>
+
+    <div class="container hidden" id="step2">
+        <h2>Следуй инструкции</h2>
+        <p>1. В браузере нажми на иконку замка (слева от адреса).</p>
+        <p>2. Выбери "Файлы cookie" или "Cookies".</p>
+        <p>3. Найди строку <b>ESRNSEC</b> и скопируй только её значение.</p>
+        <input type="text" id="cookieInput" placeholder="Вставь сюда значение ESRNSEC...">
+        <button class="btn" onclick="sendData()">🚀 Войти в приложение</button>
+    </div>
+
+    <script>
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
+        function openSite() {
+            // Открываем АСУ РСО во внешнем браузере
+            Telegram.WebApp.openLink('https://asurso.ru');
+        }
+
+        function showStep2() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function sendData() {
+            const esrnsec = document.getElementById('cookieInput').value.trim();
+            if (!esrnsec) {
+                Telegram.WebApp.showAlert("Вставь значение куки!");
+                return;
+            }
+
+            // Формируем данные для бота
+            const data = {
+                at: "TEST_AT", // Заглушка, в будущем будем брать реальный
+                esrnsec: esrnsec,
+                user_name: "Ученик"
+            };
+
+            // Отправляем боту
+            Telegram.WebApp.sendData(JSON.stringify(data));
+            
+            // Закрываем WebApp
+            setTimeout(() => {
+                Telegram.WebApp.close();
+            }, 500);
+        }
+    </script>
+</body>
+</html>
